@@ -1,0 +1,12 @@
+{
+  "name": "songlocator-backbone",
+  "version": "0.1.0",
+  "description": "SongLocator integration with Backbone",
+  "tags": ["api", "music", "streaming", "audio"],
+  "author": "Andrey Popp <8mayday@gmail.com>",
+  "main": ["./lib/songlocator-backbone.js"],
+  "dependencies": {
+    "backbone": "",
+    "songlocator": ""
+  }
+}
