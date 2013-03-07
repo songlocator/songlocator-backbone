@@ -18,6 +18,9 @@ class Song extends Model
     if not (this.streams instanceof Collection)
       this.streams = new Collection(this.streams)
     this.set('streams', this.streams)
+    this.listenTo this.streams, 'change add remove destroy sort reset', =>
+      this.trigger 'change:streams', this, this.streams, {}
+      this.trigger 'change', this, {}
 
 class Songs extends Collection
   model: Song
