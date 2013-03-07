@@ -14,7 +14,7 @@ class Stream extends Model
 class Song extends Model
   initialize: ->
     super
-    this.streams = this.streams or new Collection()
+    this.streams = this.get('streams') or new Collection()
     if not (this.streams instanceof Collection)
       this.streams = new Collection(this.streams)
     this.set('streams', this.streams)
