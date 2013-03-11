@@ -1,26 +1,22 @@
-SRC = $(shell find src -name '*.coffee')
-LIB = $(SRC:src/%.coffee=lib/%.js)
-AMD = $(LIB:lib/%.js=lib/amd/%.js)
+SRC = $(shell find . -name '*.coffee')
+LIB = $(SRC:%.coffee=%.js)
 
-all: lib amd
+all: lib
 
 lib: $(LIB)
-amd: lib $(AMD)
 
 watch:
 	watch -n 1 $(MAKE) all
 
-lib/%.js: src/%.coffee
+publish:
+	git push
+	git push --tags
+	npm publish
+
+%.js: %.coffee
 	@echo `date "+%H:%M:%S"` - compiled $<
 	@mkdir -p $(@D)
 	@coffee -bcp $< > $@
 
-lib/amd/%.js: lib/%.js
-	@echo `date "+%H:%M:%S"` - AMD compiled $<
-	@mkdir -p $(@D)
-	@echo 'define(function(require, exports, module) {' > $@
-	@cat $< >> $@
-	@echo '});' >> $@
-
 clean:
-	rm -rf $(LIB) $(AMD)
+	rm -rf $(LIB)

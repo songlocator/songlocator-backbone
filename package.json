@@ -1,11 +1,29 @@
 {
   "name": "songlocator-backbone",
   "version": "0.1.0",
-  "description": "SongLocator integration with Backbone",
-  "tags": ["api", "music", "streaming", "audio", "backbone"],
-  "author": "Andrey Popp <8mayday@gmail.com>",
+  "description": "SongLocator data models for Backbone",
+  "main": "songlocator-backbone.js",
   "dependencies": {
-    "songlocator": "",
-    "backbone": ""
-  }
+    "jquery-browserify": "~1.8.1",
+    "backbone": "~0.9.10",
+    "underscore": "~1.4.4"
+  },
+  "repository": {
+      "type": "git",
+      "url": "git://github.com/songlocator/songlocator-backbone.git"
+  },
+  "homepage": "https://github.com/songlocator/songlocator-backbone",
+  "keywords": [
+      "browser",
+      "backbone",
+      "songlocator",
+      "audio",
+      "music"
+  ],
+  "author": {
+      "name": "Andrey Popp",
+      "email": "8mayday@gmail.com",
+      "url": "http://andreypopp.com"
+  },
+  "license": "MIT"
 }
