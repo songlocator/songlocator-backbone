@@ -27,8 +27,12 @@
   class Stream extends Model
 
   class Song extends Model
-    initialize: ->
+
+    constructor: (attributes, options) ->
       super
+
+      this.qid = undefined
+
       this.streams = this.get('streams') or new Collection()
       if not (this.streams instanceof Collection)
         this.streams = new Collection(this.streams)
@@ -36,6 +40,16 @@
       this.listenTo this.streams, 'change add remove destroy sort reset', =>
         this.trigger 'change:streams', this, this.streams, {}
         this.trigger 'change', this, {}
+
+      if options?.resolver?
+        this.resolver = options.resolver
+        this.listenTo this.resolver, 'results', (r) =>
+          return unless r.qid == this.qid
+          this.streams.add(stream) for stream in r.results
+
+    resolve: ->
+      this.qid = uniqueId('resolveQID')
+      this.resolver.resolve(this.qid, this.get('title'), this.get('artist'))
 
   class Songs extends Collection
     model: Song
@@ -48,6 +62,12 @@
       this.find (song) =>
         this.equals(song, stream)
 
+    createSong: (stream) ->
+      new Song
+        title: stream.get('title')
+        artist: stream.get('artist')
+        streams: [stream]
+
     addStream: (stream) ->
       if not (stream instanceof Stream)
         stream = new Stream(stream)
@@ -56,10 +76,7 @@
         streams = song.streams.where(source: stream.source)
         song.streams.add(stream) if streams.length == 0
       else
-        song = new Song
-          title: stream.get('title')
-          artist: stream.get('artist')
-          streams: [stream]
+        song = this.createSong(stream)
         this.add(song)
 
   class ResolvedSongs extends Songs
@@ -73,14 +90,16 @@
         return unless r.qid == this.qid
         this.addStream(stream) for stream in r.results
 
+    createSong: (stream) ->
+      new Song {
+        title: stream.get('title')
+        artist: stream.get('artist')
+        streams: [stream]
+      }, {resolver: this.resolver}
+
     search: (query) ->
       this.qid = uniqueId('searchQID')
       this.resolver.search(this.qid, query)
-      this.reset()
-
-    resolve: (title, artist, album) ->
-      this.qid = uniqueId('resolveQID')
-      this.resolver.resolve(this.qid, title, artist, album)
       this.reset()
 
   {Song, Stream, Songs, ResolvedSongs}

@@ -43,22 +43,40 @@ var __hasProp = {}.hasOwnProperty,
 
     __extends(Song, _super);
 
-    function Song() {
-      return Song.__super__.constructor.apply(this, arguments);
-    }
-
-    Song.prototype.initialize = function() {
+    function Song(attributes, options) {
       var _this = this;
-      Song.__super__.initialize.apply(this, arguments);
+      Song.__super__.constructor.apply(this, arguments);
+      this.qid = void 0;
       this.streams = this.get('streams') || new Collection();
       if (!(this.streams instanceof Collection)) {
         this.streams = new Collection(this.streams);
       }
       this.set('streams', this.streams);
-      return this.listenTo(this.streams, 'change add remove destroy sort reset', function() {
+      this.listenTo(this.streams, 'change add remove destroy sort reset', function() {
         _this.trigger('change:streams', _this, _this.streams, {});
         return _this.trigger('change', _this, {});
       });
+      if ((options != null ? options.resolver : void 0) != null) {
+        this.resolver = options.resolver;
+        this.listenTo(this.resolver, 'results', function(r) {
+          var stream, _i, _len, _ref, _results;
+          if (r.qid !== _this.qid) {
+            return;
+          }
+          _ref = r.results;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            stream = _ref[_i];
+            _results.push(_this.streams.add(stream));
+          }
+          return _results;
+        });
+      }
+    }
+
+    Song.prototype.resolve = function() {
+      this.qid = uniqueId('resolveQID');
+      return this.resolver.resolve(this.qid, this.get('title'), this.get('artist'));
     };
 
     return Song;
@@ -85,6 +103,14 @@ var __hasProp = {}.hasOwnProperty,
       });
     };
 
+    Songs.prototype.createSong = function(stream) {
+      return new Song({
+        title: stream.get('title'),
+        artist: stream.get('artist'),
+        streams: [stream]
+      });
+    };
+
     Songs.prototype.addStream = function(stream) {
       var song, streams;
       if (!(stream instanceof Stream)) {
@@ -99,11 +125,7 @@ var __hasProp = {}.hasOwnProperty,
           return song.streams.add(stream);
         }
       } else {
-        song = new Song({
-          title: stream.get('title'),
-          artist: stream.get('artist'),
-          streams: [stream]
-        });
+        song = this.createSong(stream);
         return this.add(song);
       }
     };
@@ -135,15 +157,19 @@ var __hasProp = {}.hasOwnProperty,
       });
     }
 
+    ResolvedSongs.prototype.createSong = function(stream) {
+      return new Song({
+        title: stream.get('title'),
+        artist: stream.get('artist'),
+        streams: [stream]
+      }, {
+        resolver: this.resolver
+      });
+    };
+
     ResolvedSongs.prototype.search = function(query) {
       this.qid = uniqueId('searchQID');
       this.resolver.search(this.qid, query);
-      return this.reset();
-    };
-
-    ResolvedSongs.prototype.resolve = function(title, artist, album) {
-      this.qid = uniqueId('resolveQID');
-      this.resolver.resolve(this.qid, title, artist, album);
       return this.reset();
     };
 
