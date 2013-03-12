@@ -43,8 +43,13 @@ var __hasProp = {}.hasOwnProperty,
 
     __extends(Song, _super);
 
-    Song.prototype.equals = function(b) {
-      return this.get('title').toLowerCase() === b.get('title').toLowerCase() && this.get('artist').toLowerCase() === b.get('artist').toLowerCase();
+    Song.prototype.equals = function(other) {
+      var oArtist, oTitle, tArtist, tTitle;
+      tTitle = (this.get('title') || '').toLowerCase();
+      tArtist = (this.get('artist') || '').toLowerCase();
+      oTitle = (other.get('title') || '').toLowerCase();
+      oArtist = (other.get('artist') || '').toLowerCase();
+      return tTitle === oTitle && tArtist === oArtist;
     };
 
     function Song(attributes, options) {

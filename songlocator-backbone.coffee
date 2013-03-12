@@ -28,9 +28,12 @@
 
   class Song extends Model
 
-    equals: (b) ->
-      this.get('title').toLowerCase() == b.get('title').toLowerCase() \
-        and this.get('artist').toLowerCase() == b.get('artist').toLowerCase()
+    equals: (other) ->
+      tTitle = (this.get('title') or '').toLowerCase()
+      tArtist = (this.get('artist') or '').toLowerCase()
+      oTitle = (other.get('title') or '').toLowerCase()
+      oArtist = (other.get('artist') or '').toLowerCase()
+      tTitle == oTitle and tArtist == oArtist
 
     constructor: (attributes, options) ->
       super
