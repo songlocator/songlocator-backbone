@@ -15,8 +15,7 @@ publish:
 
 %.js: %.coffee
 	@echo `date "+%H:%M:%S"` - compiled $<
-	@mkdir -p $(@D)
-	@coffee -bcp $< > $@
+	@coffee --map -bc $<
 
 clean:
 	rm -rf $(LIB)
