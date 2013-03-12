@@ -104,6 +104,8 @@
       }, {resolver: this.resolver}
 
     search: (query) ->
+      query = (query or '').trim()
+      return unless query
       this.qid = uniqueId('searchQID')
       this.resolver.search(this.qid, query)
       this.reset()
