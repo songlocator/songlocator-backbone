@@ -28,6 +28,10 @@
 
   class Song extends Model
 
+    equals: (b) ->
+      this.get('title').toLowerCase() == b.get('title').toLowerCase() \
+        and this.get('artist').toLowerCase() == b.get('artist').toLowerCase()
+
     constructor: (attributes, options) ->
       super
 
@@ -45,7 +49,10 @@
         this.resolver = options.resolver
         this.listenTo this.resolver, 'results', (r) =>
           return unless r.qid == this.qid
-          this.streams.add(stream) for stream in r.results
+          for stream in r.results
+            stream = new Stream(stream)
+            continue unless this.equals(stream)
+            this.streams.add(stream) 
 
     resolve: ->
       this.qid = uniqueId('resolveQID')
@@ -54,13 +61,9 @@
   class Songs extends Collection
     model: Song
 
-    equals: (a, b) ->
-      a.get('title').toLowerCase() == b.get('title').toLowerCase() \
-        and a.get('artist').toLowerCase() == b.get('artist').toLowerCase()
-
     songForStream: (stream) ->
       this.find (song) =>
-        this.equals(song, stream)
+        song.equals(stream)
 
     createSong: (stream) ->
       new Song

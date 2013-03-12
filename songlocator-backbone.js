@@ -43,6 +43,10 @@ var __hasProp = {}.hasOwnProperty,
 
     __extends(Song, _super);
 
+    Song.prototype.equals = function(b) {
+      return this.get('title').toLowerCase() === b.get('title').toLowerCase() && this.get('artist').toLowerCase() === b.get('artist').toLowerCase();
+    };
+
     function Song(attributes, options) {
       var _this = this;
       Song.__super__.constructor.apply(this, arguments);
@@ -67,6 +71,10 @@ var __hasProp = {}.hasOwnProperty,
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             stream = _ref[_i];
+            stream = new Stream(stream);
+            if (!_this.equals(stream)) {
+              continue;
+            }
             _results.push(_this.streams.add(stream));
           }
           return _results;
@@ -92,14 +100,10 @@ var __hasProp = {}.hasOwnProperty,
 
     Songs.prototype.model = Song;
 
-    Songs.prototype.equals = function(a, b) {
-      return a.get('title').toLowerCase() === b.get('title').toLowerCase() && a.get('artist').toLowerCase() === b.get('artist').toLowerCase();
-    };
-
     Songs.prototype.songForStream = function(stream) {
       var _this = this;
       return this.find(function(song) {
-        return _this.equals(song, stream);
+        return song.equals(stream);
       });
     };
 
