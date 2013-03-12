@@ -1,6 +1,6 @@
 {
   "name": "songlocator-backbone",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": ["./songlocator-backbone.js"],
   "description": "SongLocator integration with Backbone",
   "tags": ["api", "music", "streaming", "audio", "backbone"],
